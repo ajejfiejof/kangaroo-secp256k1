@@ -67,6 +67,27 @@ class TestKangarooSolver(unittest.TestCase):
         self.assertTrue(res["success"])
         self.assertEqual(res["recovered_key"], secret)
 
+    def test_montgomery_batch_inversion(self):
+        from stacked_kangaroo import montgomery_batch_invert, P
+        import random
+        vals = [random.randint(2, P - 1) for _ in range(16)]
+        invs = montgomery_batch_invert(vals)
+        for v, inv in zip(vals, invs):
+            self.assertEqual((v * inv) % P, 1)
+
+    def test_stacked_kangaroo_solve(self):
+        from stacked_kangaroo import StackedKangarooSolver
+        solver = StackedKangarooSolver(batch_size=16)
+        secret = 543210
+        range_min = 500000
+        range_max = 1048576
+        target_pub = affine_mul(secret, G)
+
+        res = solver.solve(target_pub, range_min, range_max)
+        self.assertTrue(res["success"])
+        self.assertEqual(res["recovered_key"], secret)
+
 
 if __name__ == "__main__":
     unittest.main()
+

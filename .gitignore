@@ -1,3 +1,5 @@
 __pycache__/
 *.pyc
 *.log
+kangaroo_bench
+bin/
